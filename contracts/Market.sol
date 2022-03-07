@@ -33,7 +33,7 @@ struct ItemInMarket {
     uint deadLine;
 }
 
-    constructor() {
+    function initialize() external {
         dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
         link = IERC20(0x514910771AF9Ca656af840dff83E8264EcF986CA);
     }
