@@ -33,14 +33,9 @@ struct ItemInMarket {
     uint deadLine;
 }
 
-    function initialize() external {
+    constructor()  {
         dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
         link = IERC20(0x514910771AF9Ca656af840dff83E8264EcF986CA);
-    }
-    
-    function getBalanceOfToken(address tokenAddress, address account, uint id) public returns(uint){
-        tokens1155 = IERC1155(tokenAddress);
-        return tokens1155.balanceOf(account, id);
     }
 
     function createOffer(address tokenAddress,uint tokenId, uint tokenAmount, uint deadLine, uint priceInUSD) public {
@@ -50,6 +45,7 @@ struct ItemInMarket {
         amountOfItems++;
         ItemsInMarket[amountOfItems] = ItemInMarket(tokenAddress, payable(msg.sender), priceInUSD, tokenId, tokenAmount, deadLine);
         tokensAlreadyInMarketByTokenAddressAndUser[tokenAddress][msg.sender][tokenId] += tokenAmount;
+        itemIsInMarket[amountOfItems] = true;
         tokens1155.setApprovalForAll(address(this), true);
     }
 
@@ -132,4 +128,43 @@ struct ItemInMarket {
     function changePercentageOfFee(uint newFee) public onlyOwner {
         fee = newFee;
     }
+
+    function sendEth(address payable user) public payable {
+      user.transfer(msg.value);
+    }
+
+    function getTokenBalance() public view returns (uint) {
+        return msg.sender.balance;
+    }
+
+        function SellWithEther(uint idOfItem) public payable {
+        require(itemIsInMarket[idOfItem], "The item is not in the market");
+        uint256 priceOfEthereumInUSD = getLatestPriceOfEthereum();
+        uint256 priceOfItemInUSD = ItemsInMarket[idOfItem].priceInUSD;
+        uint256 amountOfEtherToPay = priceOfItemInUSD / priceOfEthereumInUSD;      
+        require(msg.value == amountOfEtherToPay);
+        uint tokenAmount = ItemsInMarket[idOfItem].tokenAmount;
+        uint tokenId = ItemsInMarket[idOfItem].tokenId;
+        address tokenAddress = ItemsInMarket[idOfItem].tokenAddress;
+        seller = ItemsInMarket[idOfItem].seller;
+        uint etherToAdmin = (fee * amountOfEtherToPay) / 100;
+        recipient.transfer(etherToAdmin);
+        seller.transfer(amountOfEtherToPay - etherToAdmin);
+        transferTokens(tokenAddress, seller, msg.sender, tokenId, tokenAmount);
+        itemIsInMarket[idOfItem] = false;
+    }
+
+    function getValueOfTokensInEther(uint priceInUSD) public returns (uint) {
+      
+    }
+
+    function getValueOfTokensInDai(uint priceInUSD) public returns (uint) {
+      
+    }
+
+    function getValueOfTokensInLink(uint priceInUSD) public returns (uint) {
+      
+    }
+
+
 }  
