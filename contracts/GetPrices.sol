@@ -11,45 +11,26 @@ contract GetPrices {
   constructor() {
     priceFeedInEthereum = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
     priceFeedInDai = AggregatorV3Interface(0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9);
+    //priceFeedInDai = AggregatorV3Interface(0x773616E4d11A78F511299002da57A0a94577F1f4);
     priceFeedInLink = AggregatorV3Interface(0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c);
   }
 
   function getLatestPriceOfEthereum() public view returns (uint256) {
-    (
-      uint80 roundID,
-      int price,
-      uint startedAt,
-      uint timeStamp,
-      uint80 answeredInRound
-    ) = priceFeedInEthereum.latestRoundData();
+    (,int price,,,) = priceFeedInEthereum.latestRoundData();
     // for ETH / USD price is scaled up by 10 ** 8
-    require(timeStamp > 0, "Round not complete");
-    return uint(price / 1e8);
+    return uint(price * (10 ** 10));
   }
 
   function getLatestPriceOfLink() public view returns (uint256) {
-    (
-      uint80 roundID,
-      int price,
-      uint startedAt,
-      uint timeStamp,
-      uint80 answeredInRound
-    ) = priceFeedInLink.latestRoundData();
-    // for ETH / USD price is scaled up by 10 ** 8
-    require(timeStamp > 0, "Round not complete");
-    return uint(price / 1e8);
+    (,int price,,,) = priceFeedInLink.latestRoundData();
+    // for LINK / USD price is scaled up by 10 ** 8
+    return uint(price * (10 ** 10));
   }
 
   function getLatestPriceOfDai() public view returns (uint256) {
-    (
-      uint80 roundID,
-      int price,
-      uint startedAt,
-      uint timeStamp,
-      uint80 answeredInRound
-    ) = priceFeedInDai.latestRoundData();
-    // for ETH / USD price is scaled up by 10 ** 8
-    require(timeStamp > 0, "Round not complete");
-    return uint(price / 1e8);
+    (,int price,,,) = priceFeedInDai.latestRoundData();
+    // for DAI / USD price is scaled up by 10 ** 8
+    
+    return uint(price * (10 ** 10));
   }    
 }

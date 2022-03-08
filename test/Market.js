@@ -2,103 +2,149 @@ const { expect } = require("chai");
 const { ethers } = require( "hardhat" );
 const { daiABI, parallelABI, linkABI } = require("../abis/dai.json");
 const {increaseBlocks, increaseTime, currentTime, toDays, toWei, fromWei} = require("./utils")
-describe("Token20 contract", function () {
-  let owner,
-		etherscanAddress1,
-		etherscanAddress2,
-		etherscanAddress3,
-        etherscanAddressTokenOwner,
-        ethercansWhaleAddress,
-		Market,
-		market,
-        dai,
-        whale,
-        link,
-        pallalel
+describe("Market contract", function () {
 
-  let account1, account2, account3, diome;
+  let etherscanAddress1, etherscanAddress2, etherscanAddress3, etherscanAddressTokenOwner
+  let Market, market
+  let link, parallel, dai
+  let owner, account1, account2, accountWithDai, accountWithLink, accountWithToken;
   
-  ethercansWhaleAddress = "0x3f5CE5FBFe3E9af3971dD833D26bA9b5C936f0bE";
-  etherscanAddress1 = "0x8fEEaa5f3Bcc9700fb8D44FC1ba018A958f67bFe";
-  etherscanAddress2 = "0xDD6242408D16a60C1cb5bf96c816daA0a8490773";
-  etherscanAddress3 = "0x0eeb4dd1b3fe9bd8e7cdf9781a3213b5956fd906";
+  etherscanAddressWithDai = "0x8fEEaa5f3Bcc9700fb8D44FC1ba018A958f67bFe";
+  etherscanAddressWithLink = "0xc287b9255fe158226cbf04b7d2c3915bd5c1bc99";
   etherscanAddressTokenOwner = "0xa36df1827cebc277fb49e44cb2b71e100ec5e108";
 
   beforeEach(async function () {
-    // Get the ContractFactory and Signers here.
     Market = await ethers.getContractFactory("Market");
-    //Token1155 = await ethers.getContractFactory("Token1155");
-    [owner] = await ethers.getSigners();
+    [owner, account1, account2] = await ethers.getSigners();
     
     await hre.network.provider.request({
 			method: "hardhat_impersonateAccount",
-			params: [etherscanAddress1]
+			params: [etherscanAddressWithDai]
 		});
 
-    account1 = await ethers.getSigner(etherscanAddress1);
+    accountWithDai = await ethers.getSigner(etherscanAddressWithDai);
 
     await hre.network.provider.request({
 		method: "hardhat_impersonateAccount",
-		params: [etherscanAddress2],
+		params: [etherscanAddressWithLink],
 	});
 
-	account2 = await ethers.getSigner(etherscanAddress2);
+	accountWithLink = await ethers.getSigner(etherscanAddressWithLink);
 
     await hre.network.provider.request({
 		method: "hardhat_impersonateAccount",
-		params: [etherscanAddress3],
+		params: [etherscanAddressTokenOwner],
 	});
 
-	account3 = await ethers.getSigner(etherscanAddress3);
-
-    await hre.network.provider.request({
-			method: "hardhat_impersonateAccount",
-			params: [etherscanAddressTokenOwner],
-		});
-
-	diome = await ethers.getSigner(etherscanAddressTokenOwner);
-
-    await hre.network.provider.request({
-			method: "hardhat_impersonateAccount",
-			params: [ethercansWhaleAddress],
-		});
-
-	whale = await ethers.getSigner(ethercansWhaleAddress);    
-
-    
-
-
+	accountWithToken = await ethers.getSigner(etherscanAddressTokenOwner);
 
     dai = new ethers.Contract("0x6b175474e89094c44da98b954eedeac495271d0f",daiABI);
     link = new ethers.Contract("0x514910771AF9Ca656af840dff83E8264EcF986CA",linkABI);
     parallel = new ethers.Contract("0x76be3b62873462d2142405439777e971754e8e77",parallelABI);
-    //token1155 = await Token1155.deploy()
     market = await Market.deploy();
 
   });
 
   describe("Deployment", function () {
 
-    it("Should assign the total supply of tokens to the owner", async function () {
-        expect(account1.address).to.be.equal(etherscanAddress1)
-        //expect(await market.connect(account1).getBalanceOfUser()).to.be.equal(20);
-        await market.connect(owner).sendEth(diome.address, {value: toWei(100)})
-        //console.log(await market.connect(whale).sendEth(diome.address))
-       
-        await market.connect(diome).createOffer(parallel.address, 10254, 1, 10000000000000, 10);
-        //await market.connect(diome).createOffer(parallel.address, 10254, 1, 10000000000000, 10);
+    it("Check if addresses are right", async function () {
+        expect(accountWithDai.address.toLowerCase()).to.be.equal(etherscanAddressWithDai.toLowerCase())
+        expect(accountWithLink.address.toLowerCase()).to.be.equal(etherscanAddressWithLink.toLowerCase())
+        expect(accountWithToken.address.toLowerCase()).to.be.equal(etherscanAddressTokenOwner.toLowerCase())
+    })
 
-        await parallel.connect(diome).setApprovalForAll(market.address, true)
-       
-        console.log(await parallel.connect(diome).isApprovedForAll(diome.address, market.address))
-        let balance = await parallel.connect(owner).balanceOf(diome.address, 10254);
-        console.log(await balance)
-        await market.connect(owner).SellWithEther(1, {value: toWei(0.01)})
+    it("Test creation of item in market", async function () {
+        // Send ether to pay gas fees
+        await market.connect(account1).sendEther(accountWithToken.address ,{value: toWei(10)})
+        expect(await market.amountOfItems()).to.be.equal(0);
+        expect(await market.itemIsInMarket(1)).to.be.equal(false);
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithToken.address, 10254)).to.be.equal(0);
+        await expect(market.connect(accountWithToken).createOffer(parallel.address, 10254, 10, 100000000000000, 30)).to.be.revertedWith("You don't have enough tokens")
+        await expect(market.connect(accountWithToken).createOffer(parallel.address, 10254, 1, 100, 30)).to.be.revertedWith("The deadline has to be after the creation of the token")
 
-        balance = await parallel.connect(owner).balanceOf(diome.address, 10254);
-        expect(balance).to.be.equal(0)  
-        balance = await parallel.connect(owner).balanceOf(owner.address, 10254);
-        expect(balance).to.be.equal(1)
+        await market.connect(accountWithToken).createOffer(parallel.address, 10254, 1, 1000000000000000, 30)   
+        expect(await market.amountOfItems()).to.be.equal(1);
+        expect(await market.itemIsInMarket(1)).to.be.equal(true);
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithToken.address, 10254)).to.be.equal(1);     
+    }) 
+
+    it("Test payment with ethereum", async function () {
+        await market.connect(accountWithToken).createOffer(parallel.address, 10254, 1, 1000000000000000, 1)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithToken.address, 10254)).to.be.equal(1)
+        await parallel.connect(accountWithToken).setApprovalForAll(market.address, true)
+        expect(await parallel.connect(accountWithToken).balanceOf(accountWithToken.address,10254)).to.be.equal(1)
+        expect(await parallel.connect(accountWithToken).balanceOf(account2.address,10254)).to.be.equal(0)
+        await expect(market.connect(account2).SellWithEther(2, {value: toWei(5)})).to.be.revertedWith("The item is not in the market")
+        await expect(market.connect(account2).SellWithEther(1, {value: toWei(5)})).to.be.revertedWith("The amount of ether is not right")          
+        let amountOfEtherToPay = await market.connect(owner).getValueOfTokensInEther(1)
+        await market.connect(account2).SellWithEther(1, {value: amountOfEtherToPay})
+        expect(await parallel.connect(accountWithToken).balanceOf(accountWithToken.address,10254)).to.be.equal(0)
+        expect(await parallel.connect(accountWithToken).balanceOf(account2.address,10254)).to.be.equal(1)
+        expect(await market.itemIsInMarket(1)).to.be.equal(false)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithToken.address, 10254)).to.be.equal(0)
+    })
+
+        it("Test payment with Dai", async function () {
+        expect(await parallel.connect(accountWithToken).balanceOf(account2.address,10254)).to.be.equal(1)
+        await market.connect(account2).createOffer(parallel.address, 10254, 1, 1000000000000000, 3)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, account2.address, 10254)).to.be.equal(1)
+        await parallel.connect(account2).setApprovalForAll(market.address, true)
+        expect(await parallel.connect(accountWithToken).balanceOf(account2.address,10254)).to.be.equal(1)
+        expect(await parallel.connect(accountWithToken).balanceOf(accountWithDai.address,10254)).to.be.equal(0)
+
+        await expect(market.connect(account1).SellWithDai(2)).to.be.revertedWith("The item is not in the market")
+        await expect(market.connect(account1).SellWithDai(1)).to.be.revertedWith("You don't have enough tokens")
+        let priceInDai = await market.getValueOfTokensInDai(1)
+        await dai.connect(accountWithDai).approve(market.address, priceInDai)
+        await market.connect(accountWithDai).SellWithDai(1)
+        expect(await parallel.connect(account2).balanceOf(account2.address,10254)).to.be.equal(0)
+        expect(await parallel.connect(accountWithToken).balanceOf(accountWithDai.address,10254)).to.be.equal(1)
+        expect(await market.itemIsInMarket(1)).to.be.equal(false)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithToken.address, 10254)).to.be.equal(0)
+    })
+
+    it("Test payment with Link", async function () {
+        expect(await parallel.connect(accountWithDai).balanceOf(accountWithDai.address,10254)).to.be.equal(1)
+        await market.connect(accountWithDai).createOffer(parallel.address, 10254, 1, 1000000000000000, 3)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithDai.address, 10254)).to.be.equal(1)
+        await parallel.connect(accountWithDai).setApprovalForAll(market.address, true)
+        expect(await parallel.connect(accountWithDai).balanceOf(accountWithDai.address,10254)).to.be.equal(1)
+        expect(await parallel.connect(accountWithDai).balanceOf(accountWithLink.address,10254)).to.be.equal(0)
+
+        await expect(market.connect(account1).SellWithLink(2)).to.be.revertedWith("The item is not in the market")
+        await expect(market.connect(account1).SellWithLink(1)).to.be.revertedWith("You don't have enough tokens")
+        let priceInLink = await market.getValueOfTokensInLink(1)
+        await link.connect(accountWithLink).approve(market.address, priceInLink)
+        await market.connect(accountWithLink).SellWithLink(1)
+        expect(await parallel.connect(accountWithDai).balanceOf(accountWithDai.address,10254)).to.be.equal(0)
+        expect(await parallel.connect(accountWithLink).balanceOf(accountWithLink.address,10254)).to.be.equal(1)
+        expect(await market.itemIsInMarket(1)).to.be.equal(false)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithDai.address, 10254)).to.be.equal(0)
+    })
+
+        it("Test cancell offer", async function () {
+        await expect(market.connect(account1).cancelOffer(2)).to.be.revertedWith("Item is not in market")
+        expect(await parallel.connect(accountWithLink).balanceOf(accountWithLink.address,10254)).to.be.equal(1)
+        await market.connect(accountWithLink).createOffer(parallel.address, 10254, 1, 1000000000000000, 3)
+        expect(await market.itemIsInMarket(1)).to.be.equal(true)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithLink.address, 10254)).to.be.equal(1)
+        await expect(market.connect(account1).cancelOffer(1)).to.be.revertedWith("You are not the owner of the tokens")
+        await market.connect(accountWithLink).cancelOffer(1)
+        expect(await market.tokensAlreadyInMarketByTokenAddressAndUser(parallel.address, accountWithLink.address, 10254)).to.be.equal(0)
+        expect(await market.itemIsInMarket(1)).to.be.equal(false)
+    })
+
+    it("Test fuctions that change transaction values", async function() {
+        expect(await market.recipient()).to.be.equal(owner.address)
+        expect(await market.fee()).to.be.equal(1)
+
+        await market.changeRecipientAddress(account1.address)
+        await market.changePercentageOfFee(5)  
+
+        expect(await market.recipient()).to.be.equal(account1.address)
+        expect(await market.fee()).to.be.equal(5)              
+    })
+        
     });
   });
-});
+
