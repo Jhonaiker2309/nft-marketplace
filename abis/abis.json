@@ -331,7 +331,8 @@
 		"type": "function"
 	}
 ], 
-  "linkABI": [
+
+"linkABI": [
 		{
 			"constant": true,
 			"inputs": [],
@@ -490,8 +491,9 @@
 			"name": "Approval",
 			"type": "event"
 		}
-	],
-  "parallelABI" : [
+],
+
+"parallelABI" : [
 		{
 			"inputs": [
 				{ "internalType": "string", "name": "name", "type": "string" },
@@ -1057,6 +1059,5 @@
 			"stateMutability": "view",
 			"type": "function"
 		}
-	]
-
+]
 }

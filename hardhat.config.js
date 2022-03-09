@@ -1,21 +1,23 @@
-
-   
 require("dotenv").config();
+//require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
-
 
 module.exports = {
 	networks: {
 		hardhat: {
 			forking: {
-				url: "https://eth-mainnet.alchemyapi.io/v2/OK-2Dyo04JbL1y3EkEMiGcvjGhuDcnbQ",
+				url: process.env.ALCHEMY_KEY,
 				blockNumber: 14342835,
 			},
 			chainId: 31337,
 		},
-		rinkeby: {
+		mainnet: {
 			url: process.env.ALCHEMY_KEY,
+			accounts: [process.env.ACCOUNT_KEY],
+		},
+		rinkeby: {
+			url: process.env.ALCHEMY_RINKEBY_KEY,
 			accounts: [process.env.ACCOUNT_KEY],
 		},
 		live: {
@@ -23,6 +25,9 @@ module.exports = {
 			accounts: [process.env.ACCOUNT_KEY],
 		},
 	},
+	//etherscan: {
+	//	apiKey: process.env.ETHERSCAN_API_ADDRESS,
+	//},
 	namedAccounts: {
 		deployer: 0,
 		feeRecipient: 1,
