@@ -1,0 +1,266 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x5302E909d1e93e30F05B5D6Eea766363D14F9892",
+    "txHash": "0xc2c400d9f1964e856fa40b938be516c8d8a1d796a16e1667044c7f5c3b7bb509"
+  },
+  "proxies": [
+    {
+      "address": "0x986aaa537b8cc170761FDAC6aC4fc7F9d8a20A8C",
+      "txHash": "0xee8cf0d97212df18a7396db306b45ca6a0ebb67253997cdef8c631ce5cc64271",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xefc1aB2475ACb7E60499Efb171D173be19928a05",
+      "txHash": "0x1d4a0fd75b26009b338fa87a1f2e010872269473c5e69df1269a1e483492117b",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xD49a0e9A4CD5979aE36840f542D2d7f02C4817Be",
+      "txHash": "0xe2e0b043ad84151dd1c3f81ce75654b06171fda4badabc9119753fac76ba352e",
+      "kind": "transparent"
+    },
+    {
+      "address": "0xc582Bc0317dbb0908203541971a358c44b1F3766",
+      "txHash": "0x5a2d41c8200c81edbd6ef50d28c9281041c9decf643951b207177775d60de706",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x0ed64d01D0B4B655E410EF1441dD677B695639E7",
+      "txHash": "0x6e4fc60d6fbf673a9249ca744a65dabb614c67dbe0f79878424c8c0574ba5177",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x40a42Baf86Fc821f972Ad2aC878729063CeEF403",
+      "txHash": "0x90519fe713954609ff42e50870d45ed80b3d923a1d112f4205ee726f67a9fcfc",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "382c6fe45d1f9f1596ad10224d0cedf664000dc007c1c2d38de360dfecb55b89": {
+      "address": "0xa6e99A4ED7498b3cdDCBB61a6A607a4925Faa1B7",
+      "txHash": "0xb56cc3976faba7b05585f0ec7fbdb2117c2d67a176302a43c3059c7ce6209d30",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "priceFeedInEthereum",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_contract(AggregatorV3Interface)45",
+            "contract": "GetPrices",
+            "src": "contracts/GetPrices.sol:8"
+          },
+          {
+            "label": "priceFeedInLink",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_contract(AggregatorV3Interface)45",
+            "contract": "GetPrices",
+            "src": "contracts/GetPrices.sol:9"
+          },
+          {
+            "label": "priceFeedInDai",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_contract(AggregatorV3Interface)45",
+            "contract": "GetPrices",
+            "src": "contracts/GetPrices.sol:10"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "ContextUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol:36"
+          },
+          {
+            "label": "_owner",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:22"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "54",
+            "type": "t_array(t_uint256)49_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:87"
+          },
+          {
+            "label": "tokens1155",
+            "offset": 0,
+            "slot": "103",
+            "type": "t_contract(IERC1155Upgradeable)365",
+            "contract": "Market",
+            "src": "contracts/Market.sol:11"
+          },
+          {
+            "label": "dai",
+            "offset": 0,
+            "slot": "104",
+            "type": "t_contract(IERC20Upgradeable)443",
+            "contract": "Market",
+            "src": "contracts/Market.sol:12"
+          },
+          {
+            "label": "link",
+            "offset": 0,
+            "slot": "105",
+            "type": "t_contract(IERC20Upgradeable)443",
+            "contract": "Market",
+            "src": "contracts/Market.sol:13"
+          },
+          {
+            "label": "seller",
+            "offset": 0,
+            "slot": "106",
+            "type": "t_address_payable",
+            "contract": "Market",
+            "src": "contracts/Market.sol:15"
+          },
+          {
+            "label": "recipient",
+            "offset": 0,
+            "slot": "107",
+            "type": "t_address_payable",
+            "contract": "Market",
+            "src": "contracts/Market.sol:16"
+          },
+          {
+            "label": "amountOfItems",
+            "offset": 0,
+            "slot": "108",
+            "type": "t_uint256",
+            "contract": "Market",
+            "src": "contracts/Market.sol:17"
+          },
+          {
+            "label": "fee",
+            "offset": 0,
+            "slot": "109",
+            "type": "t_uint256",
+            "contract": "Market",
+            "src": "contracts/Market.sol:18"
+          },
+          {
+            "label": "ItemsInMarket",
+            "offset": 0,
+            "slot": "110",
+            "type": "t_mapping(t_uint256,t_struct(ItemInMarket)882_storage)",
+            "contract": "Market",
+            "src": "contracts/Market.sol:20"
+          },
+          {
+            "label": "itemIsInMarket",
+            "offset": 0,
+            "slot": "111",
+            "type": "t_mapping(t_uint256,t_bool)",
+            "contract": "Market",
+            "src": "contracts/Market.sol:21"
+          },
+          {
+            "label": "tokensAlreadyInMarketByTokenAddressAndUser",
+            "offset": 0,
+            "slot": "112",
+            "type": "t_mapping(t_address,t_mapping(t_address,t_mapping(t_uint256,t_uint256)))",
+            "contract": "Market",
+            "src": "contracts/Market.sol:22"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address"
+          },
+          "t_address_payable": {
+            "label": "address payable"
+          },
+          "t_array(t_uint256)49_storage": {
+            "label": "uint256[49]"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]"
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_contract(AggregatorV3Interface)45": {
+            "label": "contract AggregatorV3Interface"
+          },
+          "t_contract(IERC1155Upgradeable)365": {
+            "label": "contract IERC1155Upgradeable"
+          },
+          "t_contract(IERC20Upgradeable)443": {
+            "label": "contract IERC20Upgradeable"
+          },
+          "t_mapping(t_address,t_mapping(t_address,t_mapping(t_uint256,t_uint256)))": {
+            "label": "mapping(address => mapping(address => mapping(uint256 => uint256)))"
+          },
+          "t_mapping(t_address,t_mapping(t_uint256,t_uint256))": {
+            "label": "mapping(address => mapping(uint256 => uint256))"
+          },
+          "t_mapping(t_uint256,t_bool)": {
+            "label": "mapping(uint256 => bool)"
+          },
+          "t_mapping(t_uint256,t_struct(ItemInMarket)882_storage)": {
+            "label": "mapping(uint256 => struct Market.ItemInMarket)"
+          },
+          "t_mapping(t_uint256,t_uint256)": {
+            "label": "mapping(uint256 => uint256)"
+          },
+          "t_struct(ItemInMarket)882_storage": {
+            "label": "struct Market.ItemInMarket",
+            "members": [
+              {
+                "label": "tokenAddress",
+                "type": "t_address"
+              },
+              {
+                "label": "seller",
+                "type": "t_address_payable"
+              },
+              {
+                "label": "priceInUSD",
+                "type": "t_uint256"
+              },
+              {
+                "label": "tokenId",
+                "type": "t_uint256"
+              },
+              {
+                "label": "tokenAmount",
+                "type": "t_uint256"
+              },
+              {
+                "label": "deadLine",
+                "type": "t_uint256"
+              }
+            ]
+          },
+          "t_uint256": {
+            "label": "uint256"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.7.0 <0.9.0;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/token/ERC1155/IERC1155Upgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "./GetPrices.sol";
 
-contract Market is GetPrices, Ownable {
+contract Market is GetPrices, OwnableUpgradeable {
 
-
-    IERC1155 public tokens1155;
-    IERC20 public dai;
-    IERC20 public link;
+    IERC1155Upgradeable public tokens1155;
+    IERC20Upgradeable public dai;
+    IERC20Upgradeable public link;
 
     address payable seller;
     address payable public recipient;
-    uint public amountOfItems = 0;
-    uint public fee = 1;
+    uint public amountOfItems;
+    uint public fee;
 
     mapping(uint => ItemInMarket) ItemsInMarket;
     mapping(uint => bool) public itemIsInMarket;
@@ -37,10 +36,15 @@ contract Market is GetPrices, Ownable {
 
     /// @notice Constructor of upgradeable function
     /// @dev  Sets address of recipient and the Interface of The erc20 tokens Dai and Link
-    function initialize() external {
-        dai = IERC20(0x6B175474E89094C44Da98b954EedeAC495271d0F);
-        link = IERC20(0x514910771AF9Ca656af840dff83E8264EcF986CA);
+    function initialize() external initializer {
+        dai = IERC20Upgradeable(0x6B175474E89094C44Da98b954EedeAC495271d0F);
+        link = IERC20Upgradeable(0x514910771AF9Ca656af840dff83E8264EcF986CA);
+        priceFeedInEthereum = AggregatorV3Interface(0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419);
+        priceFeedInDai = AggregatorV3Interface(0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9);
+        priceFeedInLink = AggregatorV3Interface(0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c);
         recipient = payable(msg.sender);
+        __Ownable_init_unchained();
+        fee = 1;
     }
 
     /// @notice Create offer in Market
@@ -51,14 +55,13 @@ contract Market is GetPrices, Ownable {
     /// @param priceInUSD Price in USD of the tokens in the Market    
     /// @dev  Add data to mapping ItemsInTheMarket
     function createOffer(address tokenAddress,uint tokenId, uint tokenAmount, uint deadLine, uint priceInUSD) public {
-        tokens1155 = IERC1155(tokenAddress);
+        tokens1155 = IERC1155Upgradeable(tokenAddress);
         require(tokenAmount + tokensAlreadyInMarketByTokenAddressAndUser[tokenAddress][msg.sender][tokenId] <= tokens1155.balanceOf(msg.sender, tokenId), "You don't have enough tokens");
         require(deadLine >= block.timestamp, "The deadline has to be after the creation of the token");
         amountOfItems++;
         ItemsInMarket[amountOfItems] = ItemInMarket(tokenAddress, payable(msg.sender), priceInUSD, tokenId, tokenAmount, deadLine);
         tokensAlreadyInMarketByTokenAddressAndUser[tokenAddress][msg.sender][tokenId] += tokenAmount;
         itemIsInMarket[amountOfItems] = true;
-        tokens1155.setApprovalForAll(address(this), true);
         emit Selling(amountOfItems, tokenAddress, msg.sender, priceInUSD, tokenId, tokenAmount, deadLine);
     }
 
@@ -130,7 +133,7 @@ contract Market is GetPrices, Ownable {
     /// @param amount Amount of tokens that will be transfered             
     /// @dev  Send tokens from the address of the seller to the address of msg.sender and pay with ether
     function transferTokens(address tokenAddress,address from, address to, uint id, uint amount) private {
-        tokens1155 = IERC1155(tokenAddress);
+        tokens1155 = IERC1155Upgradeable(tokenAddress);
         tokens1155.safeTransferFrom(from, to, id, amount, "");
         tokensAlreadyInMarketByTokenAddressAndUser[tokenAddress][from][id] -= amount;
     }

@@ -2,13 +2,13 @@
 const { ethers, upgrades } = require("hardhat");
 
 async function main() {
+    
     const Market = await ethers.getContractFactory("Market");
-    console.log("Deploying Market...");
-    const market = await upgrades.deployProxy(Market, [], {
-        initializer: "initialize",
-    });
-    await market.deployed();
-    console.log("Box deployed to:", market.address);
+	console.log("Deploying Market...");
+	const market = await upgrades.deployProxy(Market, [], {
+		initializer: "initialize",
+	});
+	await market.deployed();
+	console.log("Market deployed to:", market.address);
 }
-
 main();

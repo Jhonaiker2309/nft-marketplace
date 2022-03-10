@@ -1,7 +1,7 @@
 require("dotenv").config();
-//require("@nomiclabs/hardhat-etherscan");
 require("@nomiclabs/hardhat-ethers");
 require("@nomiclabs/hardhat-waffle");
+require("@openzeppelin/hardhat-upgrades");
 
 module.exports = {
 	networks: {
@@ -16,18 +16,11 @@ module.exports = {
 			url: process.env.ALCHEMY_KEY,
 			accounts: [process.env.ACCOUNT_KEY],
 		},
-		rinkeby: {
-			url: process.env.ALCHEMY_RINKEBY_KEY,
-			accounts: [process.env.ACCOUNT_KEY],
-		},
 		live: {
 			url: process.env.ALCHEMY_KEY,
 			accounts: [process.env.ACCOUNT_KEY],
 		},
 	},
-	//etherscan: {
-	//	apiKey: process.env.ETHERSCAN_API_ADDRESS,
-	//},
 	namedAccounts: {
 		deployer: 0,
 		feeRecipient: 1,

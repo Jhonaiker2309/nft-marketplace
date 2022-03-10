@@ -166,15 +166,15 @@ describe("Market contract", function () {
         })
 
         it("Test fuctions that change transaction values", async function() {
-            expect(await market.recipient()).to.be.equal(owner.address)
-            expect(await market.fee()).to.be.equal(1)
+					expect(await market.recipient()).to.be.equal(owner.address);
+					expect(await market.fee()).to.be.equal(1);
 
-            await market.changeRecipientAddress(account1.address)
-            await market.changePercentageOfFee(5)  
+					await market.changeRecipientAddress(account1.address)
+					 await market.changePercentageOfFee(5)
 
-            expect(await market.recipient()).to.be.equal(account1.address)
-            expect(await market.fee()).to.be.equal(5)              
-        })        
+					expect(await market.recipient()).to.be.equal(account1.address)
+					expect(await market.fee()).to.be.equal(5);
+				})        
     });
 });
 
